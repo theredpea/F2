@@ -1,6 +1,6 @@
 beforeEach(function() {
 
-	console.log('beforeEach:', this.description);
+	//console.log('beforeEach:', this.description);
 
 	this.addMatchers({
 
