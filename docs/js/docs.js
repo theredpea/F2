@@ -51,35 +51,33 @@ F2Docs.fn.navbarDocsHelper = function(){
 	var $toc 	= $('ul','div.navbar-docs')
 		$collapsedNavToc = $('ul.navinset','div.navbar-inner'),
 		file 	= location.pathname.split('/').pop(),
-		urlMap 	= {
-			"basics": 		"index.html",
-			"development": 	"app-development.html",
-			"developmentC": "container-development.html",
-			"developmentE": "extending-f2.html",
-			"developmentF":	"f2js-sdk.html"
-		};
+		_setActive = function(eq,$ul){
+			$ul.find("li").eq(eq).find("a").addClass("active");
+		}
+	;
 
 	//remove all 
 	$toc.find("a").removeClass("active");
 
 	//add active class to blue,green or orange subnav item
-	if (file == urlMap.basics || !file){
+	if (file == 'index.html' || !file){
 		_setActive(0,$toc);
 		_setActive(0,$collapsedNavToc);
 		this.currentPage = "basics";
-	} else if (
-			file == urlMap.development || 
-			file == urlMap.developmentC || 
-			file == urlMap.developmentE ||
-			file == urlMap.developmentF
-		){
+	} else if (this._checkFileNameForMatch(file)){
 		_setActive(1,$toc);
 		_setActive(1,$collapsedNavToc);
 		this.currentPage = "development";
-	}
+	}	
+}
 
-	function _setActive(eq,$ul){
-		$ul.find("li").eq(eq).find("a").addClass("active");
+/**
+ * Utility to search devSubSections map for file names 
+ * to highlight appropriate section header with CSS class.
+ */
+F2Docs.fn._checkFileNameForMatch = function(file){
+	for (var fileName in this.devSubSections){
+		if(file == this.devSubSections[fileName]){ return true; }
 	}
 }
 
@@ -89,10 +87,11 @@ F2Docs.fn.navbarDocsHelper = function(){
  * Adding to them is fine.
  */
 F2Docs.fn.devSubSections = {
-	"App Development": 		"app-development.html",
-	"Container Development":"container-development.html",
-	"Extending F2": 		"extending-f2.html",
-	"F2.js SDK": 			"f2js-sdk.html"
+	'App Development': 		'app-development.html',
+	'Container Development':'container-development.html',
+	'Extending F2': 		'extending-f2.html',
+	'F2.js SDK': 			'f2js-sdk.html',
+	'Web Services': 		'web-services.html'
 };
 
 /**
