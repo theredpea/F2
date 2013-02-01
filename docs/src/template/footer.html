@@ -13,7 +13,14 @@
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 <script src="./js/bootstrap.min.2.1.1.js"></script>
-<script src="./js/prettify.js"></script>
+<script src="./js/prettify.js?v2"></script>
 <script src="./js/f2.js?{{sdk.version}}"></script>
 <script src="./js/docs.js?{{docs.version}}"></script>
-<script>F2.extend('gitbranch', (function(){ return '{{branch}}'; }));</script>
+<script>
+	F2.extend('gitbranch', (function(){ return '{{branch}}'; }));
+	F2.extend('DocsConfig', (function(){ 
+		return {
+			services: '{{services}}'
+		}; 
+	}));
+</script>

@@ -335,10 +335,12 @@ F2Docs.fn.formatSourceCodeElements = function(){
 		;
 	});
 }
-
+/**
+ * MOD On Demand Analytics
+ */
 F2Docs.fn.insite = function(){
-	if (F2.gitbranch() !== 'master') { return; }
 	window._waq = window._waq || []; 
+	if (F2.gitbranch() !== 'master') { return; }
 	(function() {
 		var domain = 'insite.wallst.com'; 
 		_waq.push(['_setup', {reportingid: '544506', domain: domain}]); 
@@ -354,6 +356,9 @@ F2Docs.fn.insite = function(){
 	_waq.push(['_trackLinks']);
 }
 
+/** 
+ * Init events for F2 ID Lookup API demo 
+ */
 F2Docs.fn.demosF2IdLookup = function(){
 	this.$lookupForm = $('#demo-F2IDLookupForm');
 	if (!this.$lookupForm.length) { return; }
@@ -364,58 +369,77 @@ F2Docs.fn.demosF2IdLookup = function(){
 	},this));
 }
 
+/** 
+ * F2 ID Lookup API demo onSubmit handler
+ */
 F2Docs.fn._demosF2IdLookupSubmit = function(){
-	var lookupType = this.$lookupForm.children('select').val(),
-		$query = this.$lookupForm.children('input'),
+	var $lookupType = this.$lookupForm.find('select'),
+		lookupType = $lookupType.val(),
+		$query = this.$lookupForm.find('input'),
 		query = $query.val(),
+		$button = this.$lookupForm.find('button'),
+		$controlGroup = this.$lookupForm.find('div.control-group'),
 		endpoint, 
 		template,
 		endpointUrl = function(e,q){
 			return e + '?query=' + q;
 		},
 		handleResp = $.noop,
-		self = this
+		_this = this
 	;
 
+	//trap any errors
 	if (lookupType == '#' || query == ''){
-		alert('Enter search term');
-		$query.focus();
+		$controlGroup
+			.addClass('error')
+			.children('div.help-block')
+			.show()
+		;
+
+		if (lookupType = '#') { $lookupType.focus(); }
+		if (query == ''){ $query.focus(); }
 		return false;
+
+	} else if ($controlGroup.hasClass('error')) {
+		//remove error state if user intially made mistake
+		$controlGroup
+			.removeClass('error')
+			.children('div.help-block')
+			.hide()
+		;
 	}
 
-	//make user-typed stuff uniform
+	//make user-typed stuff nice looking
 	query = query.toUpperCase();
 	$query.val(query);
 
 	//config
-	endpoint = 'https://services-openf2.markitqa.com/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
+	endpoint = F2.DocsConfig().services + '/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
 	template = ['<h4>Results</h4>',
 				'<p>Query: ',
 					'<code>{endpoint}</code> ',
 					'<a href="{endpointUrlFull}" target="_blank" title="Open in new window"><i class="icon-share-alt"></i></a>',
 				'</p>',
-				'<div><pre class="prettyprint linenums_X lang-js">{response}</pre></div>'
+				'<pre id="demoLookupJsonOutput" class="prettyprint linenums lang-js">{response}</pre>'
 	].join('');
 
 	//when we're done...
 	handleResp = function(jqxhr, data, isError){
-		var resp = ((isError) ? '/** Error */' : '') + JSON.stringify(data,null,'\t');//'\t'
+		var resp = ((isError) ? '/** Error */' : '') + JSON.stringify(data,null,4),
+			html = template.supplant({
+				endpoint: endpointUrl(endpoint,query), 
+				endpointUrlFull: jqxhr.url, 
+				response: resp
+			})
+		;
 		//insert response in DOM
-		$('#demo-F2IDLookupResults').html(template.supplant({
-			endpoint: endpointUrl(endpoint,query), 
-			endpointUrlFull: jqxhr.url, 
-			response: resp
-		}));
-
+		$('#demo-F2IDLookupResults').html(html);
+		//move page up, so results are in focus
+		_this.$lookupForm.parents('#demo').find('a:first').click();
 		//prettify it
-		/*
-		var x = $('#demo-F2IDLookupResults div').html();
-		x = prettyPrintOne(x);
-		$('#demo-F2IDLookupResults div').html(x);
-		*/
-		//window.prettyPrint && prettyPrint();
+		window.prettyPrint && prettyPrint('demoLookupJsonOutput');
 		$query.select();
-		self.$lookupForm.children('button').button('reset');
+		$button.button('reset');
 	}
 
 	$.ajax({
@@ -423,13 +447,16 @@ F2Docs.fn._demosF2IdLookupSubmit = function(){
 		data: { query: query },
 		dataType: 'jsonp',
 		beforeSend: function(){
-			self.$lookupForm.children('button').button('loading');
+			$button.button('loading');
 		}
 	}).done(function(data,txtStatus){
 		handleResp(this,data);
 	}).fail(function(data,txtStatus){
 		handleResp(this,data,true);
 	});
+
+	//ODA
+	_waq.push(['_trackAction', {category: 'Docs', name: 'Demo - F2 ID Lookup', label: lookupType, value: query}]);
 }
 
 /**

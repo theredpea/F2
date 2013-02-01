@@ -157,7 +157,8 @@ function docs() {
 		'./docs/src/index.md',
 		'./docs/src/app-development.md',
 		'./docs/src/container-development.md',
-		'./docs/src/f2js-sdk.md'
+		'./docs/src/f2js-sdk.md',
+		'./docs/src/web-services.md'
 	],
 	dat = new Date();
 

@@ -133,22 +133,26 @@ F2.Events.emit(F2.Constants.Events.CONTAINER_SYMBOL_CHANGE, contextMessage);
 
 The linked documentation describes the methods available through the API, their input and output parameters, and the possible errors. A `?` indicates a value is optional (for the request) or may be null (in the response). A `[ ]` indicates that the value is an array containing 0 or more instances of the specified type.
 
-<p><a class="btn btn-primary" href="https://services.openf2.org/1.0/Lookup/doc/html" target="_blank">View complete F2 ID documentation</a></p>
+<p><a class="btn btn-primary" href="{{services}}/1.0/Lookup/doc/html" target="_blank">View complete F2 ID documentation</a></p>
 
 ### Demo
 
 The purpose of this demonstration is to provide a quick look at the input and output of the API; it is not intended to serve as a reusable component for App Developers.
 
-<form class="form form-horizontal form-search" id="demo-F2IDLookupForm" autocomplete="off">
-	<input type="text" class="span2" placeholder="Search term">
-	<span class="help-inline">is</span>
-	<select class="span3">
-  		<option value="#">a what?</option>
-  		<option value="isin">an ISIN</option>
-  		<option value="symbol">a Street symbol</option>
-  		<option value="name">a full or partial company name</option>
-	</select>
-  	<button type="submit" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+<form class="form-horizontal form-search" id="demo-F2IDLookupForm" autocomplete="off">
+	<div class="control-group">
+		<input type="text" class="span2" placeholder="Search term" >
+		<span class="help-inline">is</span>
+		<select class="span3">
+	  		<option value="#">a what?</option>
+	  		<option value="isin">an ISIN</option>
+	  		<option value="symbol">a Street symbol</option>
+	  		<option value="name">a full or partial company name</option>
+		</select>
+		<button type="submit" class="btn btn-primary" data-loading-text="Searching...">Search</button>
+		<div class="help-block hide">Enter a search term _and_ select a query type.</div>
+	</div>
+  	
 </form>
 
 <div id="demo-F2IDLookupResults"></div>
