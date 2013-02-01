@@ -355,27 +355,25 @@ F2Docs.fn.insite = function(){
 }
 
 F2Docs.fn.demosF2IdLookup = function(){
-	this.$lookupForm = $("#demo-F2IDLookupForm");
+	this.$lookupForm = $('#demo-F2IDLookupForm');
 	if (!this.$lookupForm.length) { return; }
 
-	this.$lookupForm.on("submit", $.proxy(function(e){
+	this.$lookupForm.on('submit', $.proxy(function(e){
 		e.preventDefault();
 		this._demosF2IdLookupSubmit();
 	},this));
 }
 
 F2Docs.fn._demosF2IdLookupSubmit = function(){
-	var lookupType = this.$lookupForm.children("select").val(),
-		$query = this.$lookupForm.children("input"),
+	var lookupType = this.$lookupForm.children('select').val(),
+		$query = this.$lookupForm.children('input'),
 		query = $query.val(),
 		endpoint, 
 		template,
-		resp = function(jqxhr){
-			return JSON.stringify(jqxhr,null,'\t');
-		},
 		endpointUrl = function(e,q){
 			return e + '?query=' + q;
-		}
+		},
+		handleResp = $.noop
 	;
 
 	//lookupType = 'name';
@@ -387,11 +385,24 @@ F2Docs.fn._demosF2IdLookupSubmit = function(){
 		return false;
 	}
 
+	//make user-typed stuff uniform
 	query = query.toUpperCase();
 	$query.val(query);
 
+	//config
 	endpoint = 'http://wksbbakerw7.wsod.local/F2/Services/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
 	template = '<h4>Results</h4><p>Query: <code>{endpoint}</code></p><pre class="prettyprint linenums lang-js">{response}</pre>';
+
+	//when we're done...
+	handleResp = function(jqxhr, isError){
+		var resp = ((isError) ? '/** Error */' : '') + JSON.stringify(jqxhr,null,'\t');
+		//insert response in DOM
+		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:resp}));
+		//prettify it
+		window.prettyPrint && prettyPrint();
+		$query.select();
+		this.$lookupForm.children('button').button('reset');
+	}
 
 	$.ajax({
 		url: endpoint,
@@ -399,19 +410,14 @@ F2Docs.fn._demosF2IdLookupSubmit = function(){
 			query: query
 		},
 		dataType: 'jsonp',
-		context: this
+		context: this,
+		beforeSend: function(){
+			this.$lookupForm.children('button').button('loading');
+		}
 	}).done(function(jqxhr,txtStatus){
-		//insert response in DOM
-		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:resp(jqxhr)}));
-		$query.select();
-		//prettify it
-		window.prettyPrint && prettyPrint();
+		handleResp(jqxhr);
 	}).fail(function(jqxhr,txtStatus){
-		//insert response in DOM
-		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:'/** ERROR */'+resp(jqxhr)}));
-		$query.select();
-		//prettify it
-		window.prettyPrint && prettyPrint();
+		handleResp(jqxhr,true);
 	});
 }
 
