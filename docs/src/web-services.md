@@ -75,7 +75,7 @@ The suite of F2 Web Services will be versioned as a collection and the endpoint 
 
 Releases will be numbered with the following format:
 
-`https://services.openf2.org/<major>.<minor>.<patch>/path/to/service`
+`https://services.openf2.org/<major>.<minor>/path/to/service`
 
 For more information on SemVer, please visit [SemVer.org](http://semver.org/).
 
