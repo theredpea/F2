@@ -29,6 +29,7 @@ F2Docs.fn.init = function() {
 	this.buildLeftRailToc();
 	this.buildBookmarks();
 	this.formatSourceCodeElements();
+	this.demosF2IdLookup();
 
 	$("body").scrollspy();
 
@@ -351,6 +352,67 @@ F2Docs.fn.insite = function(){
 	//F2.log(this.getName())
 	_waq.push(['_trackPageView', {category: 'Docs', name: this.getName() }]);
 	_waq.push(['_trackLinks']);
+}
+
+F2Docs.fn.demosF2IdLookup = function(){
+	this.$lookupForm = $("#demo-F2IDLookupForm");
+	if (!this.$lookupForm.length) { return; }
+
+	this.$lookupForm.on("submit", $.proxy(function(e){
+		e.preventDefault();
+		this._demosF2IdLookupSubmit();
+	},this));
+}
+
+F2Docs.fn._demosF2IdLookupSubmit = function(){
+	var lookupType = this.$lookupForm.children("select").val(),
+		$query = this.$lookupForm.children("input"),
+		query = $query.val(),
+		endpoint, 
+		template,
+		resp = function(jqxhr){
+			return JSON.stringify(jqxhr,null,'\t');
+		},
+		endpointUrl = function(e,q){
+			return e + '?query=' + q;
+		}
+	;
+
+	//lookupType = 'name';
+	//query = 'aapl';
+
+	if (lookupType == '#' || query == ''){
+		alert('Enter search term');
+		$query.focus();
+		return false;
+	}
+
+	query = query.toUpperCase();
+	$query.val(query);
+
+	endpoint = 'http://wksbbakerw7.wsod.local/F2/Services/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
+	template = '<h4>Results</h4><p>Query: <code>{endpoint}</code></p><pre class="prettyprint linenums lang-js">{response}</pre>';
+
+	$.ajax({
+		url: endpoint,
+		data: {
+			query: query
+		},
+		dataType: 'jsonp',
+		context: this
+	}).done(function(jqxhr,txtStatus){
+		//insert response in DOM
+		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:resp(jqxhr)}));
+		$query.select();
+		//prettify it
+		window.prettyPrint && prettyPrint();
+	}).fail(function(jqxhr,txtStatus){
+		//insert response in DOM
+		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:'/** ERROR */'+resp(jqxhr)}));
+		$query.select();
+		//prettify it
+		window.prettyPrint && prettyPrint();
+	});
 }
 
 /**

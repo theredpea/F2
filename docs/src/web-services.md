@@ -93,11 +93,13 @@ To track bugs or issues, F2 is using [Issues on GitHub](https://github.com/OpenF
 
 ## F2 ID
 
-The F2 Identity service allows app developers to use a single identity convention for financial instruments. Knowing about and using a single ID as part of [Context messages](index.html#context) will allow for simpler communication between Container and App Providers.
+The F2 Identity service allows app developers to use a single identity convention for financial instruments. Knowing about and using a single ID as part of [Context messages](index.html#context) will allow for simpler communication between Container and App Providers. The need for a common identifier is not new. The financial industry has yet to agree upon a universal symbol set, so we've integrated and cross-referenced a majority of ticker symbols. The F2 ID is sourced from a database of identifiers allowing for robust search of tradable instruments, regardless of issue classification scheme.
 
-The need for a common identifier is not new.
+This cross-referencing database developed by Markit On Demand, called XRef, enables users to execute symbol and company searches across countless numbers of data feeds to find exact matches quickly and intuitively. XRef allows companies the flexibility to use aggregated data sources while accommodating the range of names and symbols users access in a search. Presently, our Intersection System manages 750,000 cross-reference requests per minute during peak market hours. 
 
-<span class="label label-warning">EDITOR'S NOTE</span> insert XRef blurb
+XRef allows both name and description based lookups for any underlying instrument. Lookup includes virtually any security identifier including: RIC, CUSIP, ISIN, NSIN, Sicovam, SEDOL, Valoren and WPK. The coverage universe is global fixed income, equity, futures, options and benchmarks and industry classifications.
+
+Instead of reinventing XRef technology itself, F2 is providing access to Markit On Demand's cross-reference database and offering the F2 ID as the universal instrument identifier the financial industry needs.
 
 ### Understanding Context
 
