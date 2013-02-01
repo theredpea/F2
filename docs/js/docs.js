@@ -373,11 +373,9 @@ F2Docs.fn._demosF2IdLookupSubmit = function(){
 		endpointUrl = function(e,q){
 			return e + '?query=' + q;
 		},
-		handleResp = $.noop
+		handleResp = $.noop,
+		self = this
 	;
-
-	//lookupType = 'name';
-	//query = 'aapl';
 
 	if (lookupType == '#' || query == ''){
 		alert('Enter search term');
@@ -390,34 +388,47 @@ F2Docs.fn._demosF2IdLookupSubmit = function(){
 	$query.val(query);
 
 	//config
-	endpoint = 'http://wksbbakerw7.wsod.local/F2/Services/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
-	template = '<h4>Results</h4><p>Query: <code>{endpoint}</code></p><pre class="prettyprint linenums lang-js">{response}</pre>';
+	endpoint = 'https://services-openf2.markitqa.com/1.0/Lookup/{type}/jsonp'.supplant({type:lookupType});
+	template = ['<h4>Results</h4>',
+				'<p>Query: ',
+					'<code>{endpoint}</code> ',
+					'<a href="{endpointUrlFull}" target="_blank" title="Open in new window"><i class="icon-share-alt"></i></a>',
+				'</p>',
+				'<div><pre class="prettyprint linenums_X lang-js">{response}</pre></div>'
+	].join('');
 
 	//when we're done...
-	handleResp = function(jqxhr, isError){
-		var resp = ((isError) ? '/** Error */' : '') + JSON.stringify(jqxhr,null,'\t');
+	handleResp = function(jqxhr, data, isError){
+		var resp = ((isError) ? '/** Error */' : '') + JSON.stringify(data,null,'\t');//'\t'
 		//insert response in DOM
-		this.$lookupForm.after(template.supplant({endpoint:endpointUrl(endpoint,query), response:resp}));
+		$('#demo-F2IDLookupResults').html(template.supplant({
+			endpoint: endpointUrl(endpoint,query), 
+			endpointUrlFull: jqxhr.url, 
+			response: resp
+		}));
+
 		//prettify it
-		window.prettyPrint && prettyPrint();
+		/*
+		var x = $('#demo-F2IDLookupResults div').html();
+		x = prettyPrintOne(x);
+		$('#demo-F2IDLookupResults div').html(x);
+		*/
+		//window.prettyPrint && prettyPrint();
 		$query.select();
-		this.$lookupForm.children('button').button('reset');
+		self.$lookupForm.children('button').button('reset');
 	}
 
 	$.ajax({
 		url: endpoint,
-		data: {
-			query: query
-		},
+		data: { query: query },
 		dataType: 'jsonp',
-		context: this,
 		beforeSend: function(){
-			this.$lookupForm.children('button').button('loading');
+			self.$lookupForm.children('button').button('loading');
 		}
-	}).done(function(jqxhr,txtStatus){
-		handleResp(jqxhr);
-	}).fail(function(jqxhr,txtStatus){
-		handleResp(jqxhr,true);
+	}).done(function(data,txtStatus){
+		handleResp(this,data);
+	}).fail(function(data,txtStatus){
+		handleResp(this,data,true);
 	});
 }
 

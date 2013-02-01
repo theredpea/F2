@@ -151,8 +151,7 @@ The purpose of this demonstration is to provide a quick look at the input and ou
   	<button type="submit" class="btn btn-primary" data-loading-text="Searching...">Search</button>
 </form>
 
-
-
+<div id="demo-F2IDLookupResults"></div>
 
 * * * *
 
